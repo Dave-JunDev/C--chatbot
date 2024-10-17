@@ -20,7 +20,7 @@ public class ChatbotService : IChatbotService
         _logger = logger;
     }
 
-    public async Task<ResponseChatbotDTO> Answer(RequestChatbotDTO question)
+    public async Task<ResponseChatbotDTO> Chat(RequestChatbotDTO question)
     {
         ChatOptions options = new ()
         {
@@ -28,14 +28,31 @@ public class ChatbotService : IChatbotService
             MaxOutputTokens = question.MaxOutputTokens ?? 1000,
             TopP = question.TopP ?? 0.5f
         };
-        ChatCompletion response = await _chatClient.CompleteAsync(question.Question!, options);
+
+        IList<ChatMessage> chatMessages = TransformToChatMessage(question);
+        ChatCompletion response = await _chatClient.CompleteAsync(chatMessages!, options);
         _logger.LogInformation("This is the all properties of a response Model" + JsonSerializer.Serialize(response));
         
-        ResponseChatbotDTO responseChatbotDTO = new ResponseChatbotDTO(
-            response.Message.ToString(),
+        ResponseChatbotDTO responseChatbotDTO = new(
+            question.Chat,
             response.Usage!.InputTokenCount,
             response.Usage!.OutputTokenCount
         );
+        responseChatbotDTO.AddMessage(ChatRole.Assistant, response.Message.ToString());
+
         return responseChatbotDTO;
+    }
+
+    private IList<ChatMessage> TransformToChatMessage(RequestChatbotDTO question)
+    {
+        IList<ChatMessage> chatMessages = new List<ChatMessage>();
+
+        chatMessages = question.Chat!.Select(chat =>
+        {
+            ChatMessage chatMessage = new ChatMessage(chat.Role, chat.Content);
+            return chatMessage;
+        }).ToList();
+
+        return chatMessages;
     }
 }

@@ -17,9 +17,9 @@ public class ChatbotController : Controller
     [HttpPost]
     public async Task<IActionResult> Question(RequestChatbotDTO question)
     {
-        ResponseChatbotDTO response = await _chatbotService.Answer(question);
+        ResponseChatbotDTO response = await _chatbotService.Chat(question);
 
-        if (response.Message!.Length > 0)
+        if (response.Chat!.Count > 0)
             return Ok(response);
 
         return BadRequest("Error to response");
