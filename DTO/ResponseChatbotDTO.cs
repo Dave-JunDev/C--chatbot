@@ -4,16 +4,19 @@ namespace DTO;
 
 public class ResponseChatbotDTO
 {
-    public IList<ChatDTO>? Chat { get; set; }
+    public string? ConversationId { get; set; }
+    public IList<ChatDTO>? Conversation { get; set; }
     public int? InputTokenCount { get; set;}
     public int? OutputTokenCount { get; set; }
-    public int? TotalTokenCount => InputTokenCount + OutputTokenCount;
+    public int? TotalTokenCount { get; set; }
 
-    public ResponseChatbotDTO(IList<ChatDTO>? Message, int? InputTokenCount, int? OutputTokenCount)
+    public ResponseChatbotDTO(string? conversationId, IList<ChatDTO>? message, int? inputTokenCount, int? outputTokenCount, int? totalTokenCount)
     {
-        this.Chat = Message;
-        this.InputTokenCount = InputTokenCount;
-        this.OutputTokenCount = OutputTokenCount;
+        ConversationId = conversationId;
+        Conversation = message;
+        InputTokenCount = inputTokenCount;
+        OutputTokenCount = outputTokenCount;
+        TotalTokenCount = totalTokenCount;
     }
     public ResponseChatbotDTO()
     {
@@ -22,9 +25,9 @@ public class ResponseChatbotDTO
 
     public void AddMessage(ChatRole role, string message)
     {
-        if (Chat == null)
-            Chat = new List<ChatDTO>();
+        if (Conversation == null)
+            Conversation = new List<ChatDTO>();
 
-        Chat.Add(new(role, message));
+        Conversation.Add(new(role, message));
     }
 }

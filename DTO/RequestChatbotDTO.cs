@@ -4,8 +4,9 @@ namespace DTO;
 
 public class RequestChatbotDTO
 {
-    public IList<ChatDTO>? Chat { get; set; }
-    public float? Temperature { get; set; }
-    public float? TopP { get; set; }
-    public int? MaxOutputTokens { get; set; }
+    public string? ConversationId { get; set; }
+    public IList<ChatDTO>? Conversation { get; set; }
+    public float? Temperature { get; set; } = 0.5f;
+    public float? TopP { get; set; } = 0.5f;
+    public int? MaxOutputTokens { get; set; } = 1000;
 }

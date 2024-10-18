@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace controller;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class ChatbotController : Controller
 {
@@ -19,7 +19,7 @@ public class ChatbotController : Controller
     {
         ResponseChatbotDTO response = await _chatbotService.Chat(question);
 
-        if (response.Chat!.Count > 0)
+        if (response.Conversation!.Count > 0)
             return Ok(response);
 
         return BadRequest("Error to response");

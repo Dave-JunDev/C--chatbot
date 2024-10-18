@@ -2,14 +2,16 @@ using System.Text.Json;
 using DTO;
 using Interfaces;
 using Microsoft.Extensions.AI;
+using Models;
 
 namespace Services;
 
 public class ChatbotService : IChatbotService
 {
-    private readonly IChatClient _chatClient;
+    private readonly OllamaChatClient _chatClient;
+    private readonly IChatService _chatService;
     private readonly ILogger<ChatbotService> _logger;
-    public ChatbotService(ILogger<ChatbotService> logger)
+    public ChatbotService(IChatService chatService, ILogger<ChatbotService> logger)
     {
         if (_chatClient == null)
         {
@@ -17,6 +19,7 @@ public class ChatbotService : IChatbotService
             string model = "gemma2:latest";
             _chatClient = new OllamaChatClient(uri, model);
         }
+        _chatService = chatService;
         _logger = logger;
     }
 
@@ -24,9 +27,9 @@ public class ChatbotService : IChatbotService
     {
         ChatOptions options = new ()
         {
-            Temperature = question.Temperature ?? 0.5f,
-            MaxOutputTokens = question.MaxOutputTokens ?? 1000,
-            TopP = question.TopP ?? 0.5f
+            Temperature = question.Temperature,
+            MaxOutputTokens = question.MaxOutputTokens,
+            TopP = question.TopP
         };
 
         IList<ChatMessage> chatMessages = TransformToChatMessage(question);
@@ -34,22 +37,42 @@ public class ChatbotService : IChatbotService
         _logger.LogInformation("This is the all properties of a response Model" + JsonSerializer.Serialize(response));
         
         ResponseChatbotDTO responseChatbotDTO = new(
-            question.Chat,
+            question.ConversationId,
+            question.Conversation,
             response.Usage!.InputTokenCount,
-            response.Usage!.OutputTokenCount
+            response.Usage!.OutputTokenCount,
+            response.Usage.TotalTokenCount
         );
         responseChatbotDTO.AddMessage(ChatRole.Assistant, response.Message.ToString());
+        responseChatbotDTO.ConversationId = await CreateOrUpdateChat(responseChatbotDTO, options);
 
         return responseChatbotDTO;
+    }
+
+    private async Task<String> CreateOrUpdateChat(ResponseChatbotDTO response, ChatOptions options)
+    {
+        Chat chat;
+        if (response.ConversationId == null)
+        {
+            chat = new Chat(response.Conversation, options.Temperature, options.TopP, options.MaxOutputTokens);
+            await _chatService.CreateChat(chat);
+        }
+        else
+        {
+            chat = new Chat(response.ConversationId, response.Conversation, options.Temperature, options.TopP, options.MaxOutputTokens);
+            await _chatService.UpdateChat(chat, response.ConversationId);
+        }
+
+        return chat.Id!;
     }
 
     private IList<ChatMessage> TransformToChatMessage(RequestChatbotDTO question)
     {
         IList<ChatMessage> chatMessages = new List<ChatMessage>();
 
-        chatMessages = question.Chat!.Select(chat =>
+        chatMessages = question.Conversation!.Select(chat =>
         {
-            ChatMessage chatMessage = new ChatMessage(chat.Role, chat.Content);
+            ChatMessage chatMessage = new(chat.Role, chat.Content);
             return chatMessage;
         }).ToList();
 
