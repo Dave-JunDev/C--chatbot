@@ -1,23 +1,18 @@
+using C__chatbot.DTO;
+using C__chatbot.Interfaces;
 using DTO;
-using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace controller;
+namespace C__chatbot.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ChatbotController : Controller
+public class ChatbotController(IChatbotService chatbotService) : Controller
 {
-    private readonly IChatbotService _chatbotService;
-    public ChatbotController(IChatbotService chatbotService)
-    {
-        _chatbotService = chatbotService;
-    }
-
     [HttpPost]
-    public async Task<IActionResult> Question(RequestChatbotDTO question)
+    public async Task<IActionResult> Question(RequestChatbotDto question)
     {
-        ResponseChatbotDTO response = await _chatbotService.Chat(question);
+        var response = await chatbotService.Chat(question);
 
         if (response.Conversation!.Count > 0)
             return Ok(response);

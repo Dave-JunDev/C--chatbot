@@ -1,18 +1,18 @@
 using Microsoft.Extensions.AI;
 
-namespace DTO;
+namespace C__chatbot.DTO;
 
-public class ChatDTO
+public class ChatDto
 {
     public ChatRole Role { get; set; } = ChatRole.User;
     public string? Content { get; set; }
 
-    public ChatDTO(ChatRole role, string? content)
+    public ChatDto(ChatRole role, string? content)
     {
         Role = role;
         Content = content;
     }
-    public ChatDTO()
+    public ChatDto()
     {
         
     }

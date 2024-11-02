@@ -1,8 +1,9 @@
 using System.Text.Json;
+using C__chatbot.DTO;
+using C__chatbot.Interfaces;
+using C__chatbot.Models;
 using DTO;
-using Interfaces;
 using Microsoft.Extensions.AI;
-using Models;
 
 namespace Services;
 
@@ -23,7 +24,7 @@ public class ChatbotService : IChatbotService
         _logger = logger;
     }
 
-    public async Task<ResponseChatbotDTO> Chat(RequestChatbotDTO question)
+    public async Task<ResponseChatbotDto> Chat(RequestChatbotDto question)
     {
         ChatOptions options = new ()
         {
@@ -32,24 +33,25 @@ public class ChatbotService : IChatbotService
             TopP = question.TopP
         };
 
-        IList<ChatMessage> chatMessages = TransformToChatMessage(question);
+        var chatMessages = TransformToChatMessage(question);
         ChatCompletion response = await _chatClient.CompleteAsync(chatMessages!, options);
         _logger.LogInformation("This is the all properties of a response Model" + JsonSerializer.Serialize(response));
         
-        ResponseChatbotDTO responseChatbotDTO = new(
+        ResponseChatbotDto responseChatbotDto = new(
             question.ConversationId,
             question.Conversation,
             response.Usage!.InputTokenCount,
             response.Usage!.OutputTokenCount,
             response.Usage.TotalTokenCount
         );
-        responseChatbotDTO.AddMessage(ChatRole.Assistant, response.Message.ToString());
-        responseChatbotDTO.ConversationId = await CreateOrUpdateChat(responseChatbotDTO, options);
+        if (responseChatbotDto == null) throw new ArgumentNullException(nameof(responseChatbotDto));
+        responseChatbotDto.AddMessage(ChatRole.Assistant, response.Message.ToString());
+        responseChatbotDto.ConversationId = await CreateOrUpdateChat(responseChatbotDto, options);
 
-        return responseChatbotDTO;
+        return responseChatbotDto;
     }
 
-    private async Task<String> CreateOrUpdateChat(ResponseChatbotDTO response, ChatOptions options)
+    private async Task<string> CreateOrUpdateChat(ResponseChatbotDto response, ChatOptions options)
     {
         Chat chat;
         if (response.ConversationId == null)
@@ -66,9 +68,9 @@ public class ChatbotService : IChatbotService
         return chat.Id!;
     }
 
-    private IList<ChatMessage> TransformToChatMessage(RequestChatbotDTO question)
+    private IList<ChatMessage> TransformToChatMessage(RequestChatbotDto question)
     {
-        IList<ChatMessage> chatMessages = new List<ChatMessage>();
+        IList<ChatMessage> chatMessages;
 
         chatMessages = question.Conversation!.Select(chat =>
         {

@@ -1,4 +1,4 @@
-namespace Models;
+namespace C__chatbot.Models;
 
 public class Collections
 {

@@ -1,6 +1,6 @@
-namespace Models;
+namespace C__chatbot.Models;
 
-public class MongoDBSettings
+public class MongoDbSettings
 {
     public string? ConnectionString { get; set; }
     public string? DatabaseName { get; set; }

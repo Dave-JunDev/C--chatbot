@@ -1,13 +1,13 @@
+using C__chatbot.Models;
 using Microsoft.Extensions.Options;
-using Models;
 using MongoDB.Driver;
 
-namespace Context;
+namespace C__chatbot.Context;
 
 public class MongoContext
 {
     private readonly IMongoCollection<Chat> _chatCollection;
-    public MongoContext(IOptions<MongoDBSettings> mongoDBSettings, IOptions<Collections> collections)
+    public MongoContext(IOptions<MongoDbSettings> mongoDBSettings, IOptions<Collections> collections)
     {
         MongoClient client = new MongoClient(mongoDBSettings.Value.ConnectionString);
         var database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);

@@ -1,6 +1,6 @@
 using MongoDB.Driver;
 
-namespace Interfaces;
+namespace C__chatbot.Interfaces;
 
 public interface ICommonService
 {

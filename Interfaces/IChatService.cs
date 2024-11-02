@@ -1,6 +1,6 @@
-using Models;
+using C__chatbot.Models;
 
-namespace Interfaces;
+namespace C__chatbot.Interfaces;
 
 public interface IChatService
 {

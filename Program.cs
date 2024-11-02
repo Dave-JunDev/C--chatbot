@@ -1,13 +1,14 @@
+using C__chatbot.Context;
+using C__chatbot.Interfaces;
+using C__chatbot.Models;
+using C__chatbot.Services;
 using Services;
-using Interfaces;
-using Context;
 using Microsoft.EntityFrameworkCore;
-using Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // context
-builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"));
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.Configure<Collections>(builder.Configuration.GetSection("Collections"));
 builder.Services.AddSingleton<MongoContext>();
 
@@ -31,6 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.UseAuthorization();
 app.MapControllers();

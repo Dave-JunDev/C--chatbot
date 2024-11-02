@@ -1,16 +1,16 @@
 using Microsoft.Extensions.AI;
 
-namespace DTO;
+namespace C__chatbot.DTO;
 
-public class ResponseChatbotDTO
+public class ResponseChatbotDto
 {
     public string? ConversationId { get; set; }
-    public IList<ChatDTO>? Conversation { get; set; }
+    public IList<ChatDto>? Conversation { get; set; }
     public int? InputTokenCount { get; set;}
     public int? OutputTokenCount { get; set; }
     public int? TotalTokenCount { get; set; }
 
-    public ResponseChatbotDTO(string? conversationId, IList<ChatDTO>? message, int? inputTokenCount, int? outputTokenCount, int? totalTokenCount)
+    public ResponseChatbotDto(string? conversationId, IList<ChatDto>? message, int? inputTokenCount, int? outputTokenCount, int? totalTokenCount)
     {
         ConversationId = conversationId;
         Conversation = message;
@@ -18,7 +18,7 @@ public class ResponseChatbotDTO
         OutputTokenCount = outputTokenCount;
         TotalTokenCount = totalTokenCount;
     }
-    public ResponseChatbotDTO()
+    public ResponseChatbotDto()
     {
         
     }
@@ -26,7 +26,7 @@ public class ResponseChatbotDTO
     public void AddMessage(ChatRole role, string message)
     {
         if (Conversation == null)
-            Conversation = new List<ChatDTO>();
+            Conversation = new List<ChatDto>();
 
         Conversation.Add(new(role, message));
     }

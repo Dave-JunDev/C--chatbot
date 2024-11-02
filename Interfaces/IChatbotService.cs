@@ -1,8 +1,9 @@
+using C__chatbot.DTO;
 using DTO;
 
-namespace Interfaces;
+namespace C__chatbot.Interfaces;
 
 public interface IChatbotService
 {
-    Task<ResponseChatbotDTO> Chat(RequestChatbotDTO question);
+    Task<ResponseChatbotDto> Chat(RequestChatbotDto question);
 }
