@@ -2,14 +2,14 @@ using C__chatbot.Interfaces;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
-namespace Services;
+namespace C__chatbot.Services;
 
 public class CommonService : ICommonService
 {
     public CommonService() { }
     public async Task<T> GetItemByIdAsync<T>(IMongoCollection<T> collection, string id)
     {
-        var item = await collection.Find($"{{ _id: ObjectId('{id}') }}").FirstAsync();
+        var item = await collection.Find($"{{ _id: ObjectId('{id}') }}").FirstOrDefaultAsync();
         return item ?? default!;
     }
     public async Task<List<T>> GetAll<T>(IMongoCollection<T> collection)

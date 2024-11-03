@@ -19,6 +19,10 @@ public class ChatController(IChatService chatService) : Controller
     public async Task<IActionResult> GetChatById(string id)
     {
         var chat = await chatService.GetChatById(id);
+        
+        if (chat == null)
+            return NotFound();
+        
         return Ok(chat);
     }
 

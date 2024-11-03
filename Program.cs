@@ -2,7 +2,6 @@ using C__chatbot.Context;
 using C__chatbot.Interfaces;
 using C__chatbot.Models;
 using C__chatbot.Services;
-using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
