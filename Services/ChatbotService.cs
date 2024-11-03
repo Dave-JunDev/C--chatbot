@@ -4,22 +4,19 @@ using C__chatbot.Interfaces;
 using C__chatbot.Models;
 using DTO;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Options;
 
-namespace Services;
+namespace C__chatbot.Services;
 
 public class ChatbotService : IChatbotService
 {
-    private readonly OllamaChatClient _chatClient;
+    private readonly OllamaChatClient _client;
     private readonly IChatService _chatService;
     private readonly ILogger<ChatbotService> _logger;
-    public ChatbotService(IChatService chatService, ILogger<ChatbotService> logger)
+    public ChatbotService(IChatService chatService, ILogger<ChatbotService> logger, IOptions<OllamaModel> chatClient)
     {
-        if (_chatClient == null)
-        {
-            Uri uri = new Uri("http://localhost:11434");
-            string model = "gemma2:latest";
-            _chatClient = new OllamaChatClient(uri, model);
-        }
+        var ollamaModel = new OllamaModel(chatClient.Value.Url!,chatClient.Value.Model!);
+        _client = ollamaModel.InstanceModel();
         _chatService = chatService;
         _logger = logger;
     }
@@ -34,7 +31,7 @@ public class ChatbotService : IChatbotService
         };
 
         var chatMessages = TransformToChatMessage(question);
-        ChatCompletion response = await _chatClient.CompleteAsync(chatMessages!, options);
+        var response = await _client.CompleteAsync(chatMessages!, options);
         _logger.LogInformation("This is the all properties of a response Model" + JsonSerializer.Serialize(response));
         
         ResponseChatbotDto responseChatbotDto = new(
@@ -44,7 +41,6 @@ public class ChatbotService : IChatbotService
             response.Usage!.OutputTokenCount,
             response.Usage.TotalTokenCount
         );
-        if (responseChatbotDto == null) throw new ArgumentNullException(nameof(responseChatbotDto));
         responseChatbotDto.AddMessage(ChatRole.Assistant, response.Message.ToString());
         responseChatbotDto.ConversationId = await CreateOrUpdateChat(responseChatbotDto, options);
 

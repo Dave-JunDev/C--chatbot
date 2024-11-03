@@ -7,10 +7,10 @@ namespace C__chatbot.Context;
 public class MongoContext
 {
     private readonly IMongoCollection<Chat> _chatCollection;
-    public MongoContext(IOptions<MongoDbSettings> mongoDBSettings, IOptions<Collections> collections)
+    public MongoContext(IOptions<MongoDbSettings> mongoDbSettings, IOptions<Collections> collections)
     {
-        MongoClient client = new MongoClient(mongoDBSettings.Value.ConnectionString);
-        var database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
+        MongoClient client = new MongoClient(mongoDbSettings.Value.ConnectionString);
+        var database = client.GetDatabase(mongoDbSettings.Value.DatabaseName);
         _chatCollection = database.GetCollection<Chat>(collections.Value.Chat);
     }
 

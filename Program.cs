@@ -3,12 +3,12 @@ using C__chatbot.Interfaces;
 using C__chatbot.Models;
 using C__chatbot.Services;
 using Services;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // context
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
+builder.Services.Configure<OllamaModel>(builder.Configuration.GetSection("Ollama"));
 builder.Services.Configure<Collections>(builder.Configuration.GetSection("Collections"));
 builder.Services.AddSingleton<MongoContext>();
 
